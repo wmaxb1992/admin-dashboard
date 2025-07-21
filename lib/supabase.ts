@@ -2,7 +2,6 @@ import { createClient } from '@supabase/supabase-js'
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
 
 // Check if we have valid Supabase credentials
 const isValidSupabaseConfig = 
@@ -17,10 +16,24 @@ export const supabase = isValidSupabaseConfig
   ? createClient(supabaseUrl, supabaseKey)
   : null
 
-// Admin client with service role key for destructive operations
-export const supabaseAdmin = isValidSupabaseConfig && supabaseServiceKey
-  ? createClient(supabaseUrl, supabaseServiceKey)
-  : null
+// Admin client with service role key for destructive operations - lazy loaded
+let _supabaseAdmin: ReturnType<typeof createClient> | null = null
+
+export const getSupabaseAdmin = () => {
+  if (!_supabaseAdmin) {
+    const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+    
+    if (!isValidSupabaseConfig || !supabaseServiceKey) {
+      throw new Error('Missing Supabase admin environment variables')
+    }
+
+    _supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey)
+  }
+  return _supabaseAdmin
+}
+
+// For backward compatibility - will be null to avoid build time issues
+export const supabaseAdmin = null
 
 // Database types
 export interface Category {
@@ -59,6 +72,10 @@ export interface VarietyWithDetails extends Variety {
 
 // API functions
 export async function getAllVarieties() {
+  if (!supabase) {
+    throw new Error('Supabase client not initialized')
+  }
+  
   // Get varieties with farm count
   const { data, error } = await supabase
     .rpc('get_varieties_with_farm_count')
@@ -66,6 +83,10 @@ export async function getAllVarieties() {
   if (error) {
     console.error('Error calling get_varieties_with_farm_count:', error)
     // Fallback to basic query if the RPC doesn't exist
+    if (!supabase) {
+      throw new Error('Supabase client not initialized')
+    }
+    
     const { data: fallbackData, error: fallbackError } = await supabase
       .from('varieties_search')
       .select('*')
@@ -79,6 +100,10 @@ export async function getAllVarieties() {
 }
 
 export async function searchVarieties(searchTerm: string, categoryFilter?: string) {
+  if (!supabase) {
+    throw new Error('Supabase client not initialized')
+  }
+  
   const { data, error } = await supabase
     .rpc('search_varieties', {
       search_term: searchTerm,
@@ -90,6 +115,10 @@ export async function searchVarieties(searchTerm: string, categoryFilter?: strin
 }
 
 export async function getVarietySuggestions(searchTerm: string, limit: number = 10) {
+  if (!supabase) {
+    throw new Error('Supabase client not initialized')
+  }
+  
   const { data, error } = await supabase
     .rpc('get_variety_suggestions', {
       search_term: searchTerm,
@@ -101,6 +130,10 @@ export async function getVarietySuggestions(searchTerm: string, limit: number = 
 }
 
 export async function getCategories() {
+  if (!supabase) {
+    throw new Error('Supabase client not initialized')
+  }
+  
   const { data, error } = await supabase
     .from('categories')
     .select('*')
@@ -111,6 +144,10 @@ export async function getCategories() {
 }
 
 export async function getSubcategories(categoryId?: string) {
+  if (!supabase) {
+    throw new Error('Supabase client not initialized')
+  }
+  
   let query = supabase
     .from('subcategories')
     .select('*, categories(name)')
@@ -127,6 +164,10 @@ export async function getSubcategories(categoryId?: string) {
 }
 
 export async function getVarieties(subcategoryId?: string) {
+  if (!supabase) {
+    throw new Error('Supabase client not initialized')
+  }
+  
   let query = supabase
     .from('varieties')
     .select(`
@@ -146,6 +187,10 @@ export async function getVarieties(subcategoryId?: string) {
 }
 
 export async function getVarietyStats() {
+  if (!supabase) {
+    throw new Error('Supabase client not initialized')
+  }
+  
   const { data, error } = await supabase
     .from('varieties_search')
     .select('category_name')
