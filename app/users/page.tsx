@@ -134,6 +134,46 @@ export default function UserManagement() {
     }
   }
 
+  // Create user
+  const createUser = async (values: any) => {
+    try {
+      const response = await fetch('/api/users', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(values)
+      })
+      
+      if (!response.ok) throw new Error('Failed to create user')
+      
+      notification.success({
+        message: 'Success',
+        description: 'User created successfully'
+      })
+      
+      setIsModalVisible(false)
+      form.resetFields()
+      setSelectedUser(null)
+      fetchUsers() // Refresh the list
+    } catch (error) {
+      console.error('Error creating user:', error)
+      notification.error({
+        message: 'Error',
+        description: 'Failed to create user'
+      })
+    }
+  }
+
+  // Handle form submission
+  const handleFormSubmit = async (values: any) => {
+    if (selectedUser) {
+      await updateUser(values)
+    } else {
+      await createUser(values)
+    }
+  }
+
   // Filter users based on search term
   const filteredUsers = users.filter(user =>
     user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -309,7 +349,7 @@ export default function UserManagement() {
           <Form
             form={form}
             layout="vertical"
-            onFinish={updateUser}
+            onFinish={handleFormSubmit}
           >
             <Form.Item
               label="Name"
