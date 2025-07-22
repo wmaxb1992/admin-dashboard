@@ -16,32 +16,38 @@ export async function GET() {
   try {
     const supabaseAdmin = getSupabaseAdmin()
     
-    // Fetch users with their associated farms
-    const { data: users, error } = await supabaseAdmin
+    // First, fetch all users
+    const { data: users, error: usersError } = await supabaseAdmin
       .from('users')
-      .select(`
-        *,
-        farms (
-          id,
-          name,
-          description,
-          owner_name,
-          email,
-          phone,
-          created_at
-        )
-      `)
+      .select('*')
       .order('created_at', { ascending: false })
     
-    if (error) {
-      console.error('Error fetching users:', error)
+    if (usersError) {
+      console.error('Error fetching users:', usersError)
       return NextResponse.json(
         { error: 'Failed to fetch users' },
         { status: 500 }
       )
     }
+
+    // Then fetch all farms
+    const { data: farms, error: farmsError } = await supabaseAdmin
+      .from('farms')
+      .select('id, name, description, owner_name, email, phone, created_at, owner_id')
     
-    return NextResponse.json({ users: users || [] })
+    if (farmsError) {
+      console.error('Error fetching farms:', farmsError)
+      // Continue without farms data - farms table might not exist yet
+      console.log('Farms table might not exist, returning users without farm data')
+    }
+
+    // Combine users with their farms
+    const usersWithFarms = users?.map(user => ({
+      ...user,
+      farms: farms?.filter(farm => farm.owner_id === user.id) || []
+    })) || []
+    
+    return NextResponse.json({ users: usersWithFarms })
   } catch (error) {
     console.error('Error in GET /api/users:', error)
     return NextResponse.json(

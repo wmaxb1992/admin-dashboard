@@ -90,21 +90,22 @@ export async function DELETE(
     const supabaseAdmin = getSupabaseAdmin()
     const userId = params.id
     
-    // First, delete all farms owned by this user
-    const { error: farmsError } = await supabaseAdmin
-      .from('farms')
-      .delete()
-      .eq('owner_id', userId)
-    
-    if (farmsError) {
-      console.error('Error deleting user farms:', farmsError)
-      return NextResponse.json(
-        { error: 'Failed to delete user farms' },
-        { status: 500 }
-      )
+    // Try to delete farms owned by this user (if farms table exists)
+    try {
+      const { error: farmsError } = await supabaseAdmin
+        .from('farms')
+        .delete()
+        .eq('owner_id', userId)
+      
+      if (farmsError) {
+        console.log('Could not delete farms (table might not exist):', farmsError)
+        // Continue with user deletion even if farms deletion fails
+      }
+    } catch (farmDeleteError) {
+      console.log('Farms table might not exist, skipping farm deletion')
     }
     
-    // Then delete the user
+    // Delete the user
     const { data: user, error } = await supabaseAdmin
       .from('users')
       .delete()
@@ -127,7 +128,7 @@ export async function DELETE(
       )
     }
     
-    return NextResponse.json({ message: 'User and associated farms deleted successfully' })
+    return NextResponse.json({ message: 'User deleted successfully' })
   } catch (error) {
     console.error('Error in DELETE /api/users/[id]:', error)
     return NextResponse.json(
