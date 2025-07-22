@@ -212,19 +212,18 @@ export default function FarmManagement() {
       title: 'Farm Name',
       dataIndex: 'name',
       key: 'name',
-      render: (name) => <Text strong>{name}</Text>
+      render: (name) => (
+        <div style={{ height: '40px', display: 'flex', alignItems: 'center' }}>
+          <Text strong>{name}</Text>
+        </div>
+      )
     },
     {
       title: 'Owner',
       key: 'owner',
       render: (_, record) => (
-        <div>
+        <div style={{ height: '40px', display: 'flex', alignItems: 'center' }}>
           <Text>{record.owner_name || record.owner?.name || 'N/A'}</Text>
-          {record.owner?.email && (
-            <div style={{ fontSize: '12px', color: '#666' }}>
-              {record.owner.email}
-            </div>
-          )}
         </div>
       )
     },
@@ -232,13 +231,8 @@ export default function FarmManagement() {
       title: 'Contact',
       key: 'contact',
       render: (_, record) => (
-        <div>
-          <div>{record.email}</div>
-          {record.phone && (
-            <div style={{ fontSize: '12px', color: '#666' }}>
-              {record.phone}
-            </div>
-          )}
+        <div style={{ height: '40px', display: 'flex', alignItems: 'center' }}>
+          <Text ellipsis={{ tooltip: record.email }}>{record.email}</Text>
         </div>
       )
     },
@@ -246,31 +240,44 @@ export default function FarmManagement() {
       title: 'Location',
       dataIndex: 'address',
       key: 'address',
-      render: (address) => address ? (
-        <Text title={address}>
-          <EnvironmentOutlined /> {address.length > 30 ? address.substring(0, 30) + '...' : address}
-        </Text>
-      ) : 'N/A'
+      render: (address) => (
+        <div style={{ height: '40px', display: 'flex', alignItems: 'center' }}>
+          {address ? (
+            <Text ellipsis={{ tooltip: address }}>
+              <EnvironmentOutlined /> {address.length > 25 ? address.substring(0, 25) + '...' : address}
+            </Text>
+          ) : 'N/A'}
+        </div>
+      )
     },
     {
       title: 'Rating',
       dataIndex: 'rating',
       key: 'rating',
-      render: (rating) => rating ? (
-        <Tag color="gold">⭐ {rating}</Tag>
-      ) : <Text type="secondary">No rating</Text>
+      render: (rating) => (
+        <div style={{ height: '40px', display: 'flex', alignItems: 'center' }}>
+          {rating ? (
+            <Tag color="gold">⭐ {rating}</Tag>
+          ) : <Text type="secondary">No rating</Text>}
+        </div>
+      )
     },
     {
       title: 'Created',
       dataIndex: 'created_at',
       key: 'created_at',
-      render: (date) => new Date(date).toLocaleDateString()
+      render: (date) => (
+        <div style={{ height: '40px', display: 'flex', alignItems: 'center' }}>
+          {new Date(date).toLocaleDateString()}
+        </div>
+      )
     },
     {
       title: 'Actions',
       key: 'actions',
       render: (_, record) => (
-        <Space>
+        <div style={{ height: '40px', display: 'flex', alignItems: 'center' }}>
+          <Space size="small">
           <Button
             icon={<EyeOutlined />}
             onClick={() => {
@@ -424,12 +431,17 @@ export default function FarmManagement() {
             dataSource={filteredFarms}
             rowKey="id"
             loading={loading}
+            size="small"
             pagination={{
               pageSize: 10,
               showSizeChanger: true,
               showQuickJumper: true,
               showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} farms`
             }}
+            style={{
+              '--ant-table-row-height': '40px'
+            } as React.CSSProperties}
+            className="compact-table"
           />
         </Card>
 

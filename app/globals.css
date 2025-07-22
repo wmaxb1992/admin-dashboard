@@ -4,17 +4,64 @@
 @tailwind utilities;
 
 :root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
+  --foreground-rgb: 44, 24, 16; /* Dark brown for better readability */
+  --background-start-rgb: 250, 245, 240; /* Light orange */
+  --background-end-rgb: 255, 255, 255; /* White */
+  
+  /* Sunset Orange theme colors */
+  --sunset-orange: 255, 107, 53;
+  --sunset-orange-light: 255, 140, 66;
+  --sunset-orange-lighter: 255, 242, 237;
+  --sunset-orange-dark: 229, 90, 43;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
+    --foreground-rgb: 255, 242, 237;
+    --background-start-rgb: 44, 24, 16;
+    --background-end-rgb: 20, 10, 5;
   }
 }
 
-/* Remove custom styles since we're using pure Ant Design */
+/* Custom scrollbar with orange theme */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 242, 237, 0.3);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 107, 53, 0.3);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 107, 53, 0.5);
+}
+
+/* Custom focus outline for accessibility */
+*:focus-visible {
+  outline: 2px solid rgb(var(--sunset-orange));
+  outline-offset: 2px;
+}
+
+/* Smooth transitions for theme elements */
+.ant-table-tbody > tr > td,
+.ant-card,
+.ant-btn,
+.ant-input,
+.ant-select-selector {
+  transition: all 0.2s ease-in-out;
+}
+
+/* Custom gradient backgrounds for special elements */
+.sunset-gradient {
+  background: linear-gradient(135deg, rgb(var(--sunset-orange)) 0%, rgb(var(--sunset-orange-light)) 100%);
+}
+
+.sunset-gradient-light {
+  background: linear-gradient(135deg, rgb(var(--sunset-orange-lighter)) 0%, rgba(255, 255, 255, 0.9) 100%);
+}

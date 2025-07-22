@@ -326,12 +326,17 @@ export default function UserManagement() {
             dataSource={filteredUsers}
             rowKey="id"
             loading={loading}
+            size="small"
             pagination={{
               pageSize: 10,
               showSizeChanger: true,
               showQuickJumper: true,
               showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} users`
             }}
+            style={{
+              '--ant-table-row-height': '40px'
+            } as React.CSSProperties}
+            className="compact-table"
           />
         </Card>
 
