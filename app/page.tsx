@@ -16,14 +16,16 @@ import {
   Tag, 
   theme,
   Empty,
-  Spin
+  Spin,
+  Menu
 } from 'antd'
 import {
   SearchOutlined,
   FilterOutlined,
   BarChartOutlined,
   DatabaseOutlined,
-  BugOutlined
+  BugOutlined,
+  UserOutlined
 } from '@ant-design/icons'
 import type { ColumnsType } from 'antd/es/table'
 import { searchVarieties, getVarietyStats, getCategories, getAllVarieties, findDuplicateVarieties, removeDuplicateVarieties } from '@/lib/supabase'
@@ -210,11 +212,21 @@ export default function AdminDashboard() {
             Master Catalog Admin
           </Title>
         </div>
-        <Space>
-          <DatabaseOutlined style={{ fontSize: '24px', color: 'white' }} />
-          <Text style={{ color: 'white' }}>
-            {stats?.total || 0} Varieties
-          </Text>
+        <Space size="large">
+          <Button 
+            type="text" 
+            icon={<UserOutlined />} 
+            style={{ color: 'white', border: '1px solid white' }}
+            onClick={() => window.location.href = '/users'}
+          >
+            Manage Users
+          </Button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <DatabaseOutlined style={{ fontSize: '24px', color: 'white' }} />
+            <Text style={{ color: 'white' }}>
+              {stats?.total || 0} Varieties
+            </Text>
+          </div>
         </Space>
       </Header>
 
