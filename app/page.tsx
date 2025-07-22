@@ -25,7 +25,8 @@ import {
   BarChartOutlined,
   DatabaseOutlined,
   BugOutlined,
-  UserOutlined
+  UserOutlined,
+  ShopOutlined
 } from '@ant-design/icons'
 import type { ColumnsType } from 'antd/es/table'
 import { searchVarieties, getVarietyStats, getCategories, getAllVarieties, findDuplicateVarieties, removeDuplicateVarieties } from '@/lib/supabase'
@@ -213,6 +214,14 @@ export default function AdminDashboard() {
           </Title>
         </div>
         <Space size="large">
+          <Button 
+            type="text" 
+            icon={<ShopOutlined />} 
+            style={{ color: 'white', border: '1px solid white' }}
+            onClick={() => window.location.href = '/farms'}
+          >
+            Manage Farms
+          </Button>
           <Button 
             type="text" 
             icon={<UserOutlined />} 
